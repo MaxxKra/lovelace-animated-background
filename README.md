@@ -113,7 +113,7 @@ Ex:
 animated_background:
   default_url: "https://cdn.flixel.com/flixel/ypy8bw9fgw1zv2b4htp2.hd.mp4"
   included_users:
-    - Villhellm
+    - SmartHomeBastler
   # This entity is just an example, use whatever entity you would like
   entity: "weather.home"
   state_url:
