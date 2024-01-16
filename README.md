@@ -25,6 +25,11 @@ Add the resource to your configuration. If you are in yaml mode follow [the love
 ### Step 3
 
 Add the custom element in the root of your `ui-lovelace.yaml` (or Lovelace raw configuration if not in yaml mode), not in a view or card.
+
+## :bangbang: UPDATE :bangbang:
+
+I have taken the liberty to expand the weather conditions to include `pouring` , `lightning-rainy` , `snowy` , and `snowy-rainy` and to adjust the backgrounds accordingly.
+
 Ex:
 ```yaml
 animated_background:
