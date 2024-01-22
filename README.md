@@ -10,7 +10,7 @@ Create animated backgrounds based on the state of one of your entities. Original
 A big thanks to [Customer Header](https://github.com/maykar/custom-header) and [VideoBackground-Card](https://github.com/Perdemot/Lovelace-Cards/tree/master/VideoBackground-Card) for the inspiration.
 
 Example:
-![Example](https://raw.githubusercontent.com/MaxxKra/README_images/master/a_backgound.gif)
+![Example](https://raw.githubusercontent.com/MaxxKra/README_images/A_Background/master/a_backgound.gif)
 
 ## Installation Method 1: Manual
 
