@@ -491,7 +491,7 @@ function renderBackgroundHTML() {
           top: 0;
           min-width: 100vw; 
           min-height: 100vh;
-          z-index: 0;
+          z-index: -10;
       }`;
       var div = document.createElement("div");
       div.id = "background-video";
