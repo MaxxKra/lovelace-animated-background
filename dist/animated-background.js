@@ -483,8 +483,12 @@ function renderBackgroundHTML() {
       .bg-video{
           min-width: 100vw; 
           min-height: 100vh;
-          
       }
+
+      #view {
+          background: none;
+        }
+
       .bg-wrap{
           position: fixed;
           right: 0;
