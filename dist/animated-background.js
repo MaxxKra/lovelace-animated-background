@@ -495,7 +495,7 @@ function renderBackgroundHTML() {
           min-height: 100vh;    
       }
       
-      #view {
+      hui-view-background {
           background: none;
         }
       
@@ -543,8 +543,6 @@ function renderBackgroundHTML() {
       Root.shadowRoot.appendChild(style);
       Root.shadowRoot.appendChild(div);
       View.insertBefore(transparent_body,View.firstChild);
-      
-      View.setAttribute ("style","background:none;");
       
       Previous_Url = state_url;
     }
