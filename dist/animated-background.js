@@ -1,4 +1,4 @@
-//const
+
 const Debug_Prefix = "Animated Background DEBUG: ";
 const Log_Prefix = "Animated Background: "
 
@@ -11,7 +11,7 @@ var Animated_Config;
 var Haobj = null;
 var View;
 var Panel_Holder;
-var Debug_Mode = true;
+var Debug_Mode = false;
 var Loaded = false;
 var View_Loaded = false;
 var Meme_Remover = null;
@@ -342,7 +342,12 @@ function getEntityState(entity) {
 
 //main render function
 function renderBackgroundHTML() {
+  Opacity = 99;
   var current_config = currentConfig();
+  var resolved_opacity = current_config && current_config.opacity !== undefined ? current_config.opacity : (Animated_Config ? Animated_Config.opacity : 99);
+  if (parseInt(resolved_opacity) > 0) {
+    Opacity = resolved_opacity;
+  }
   var state_url = "";
   var temp_enabled = true;
   //rerender background if entity has changed (to avoid no background refresh if the new entity happens to have the same state)
@@ -495,54 +500,54 @@ function renderBackgroundHTML() {
           min-height: 100vh;    
       }
       
-      hui-view-background {
+      #view {
           background: none;
         }
       
       .bg-wrap{
           position: fixed;
-          right: 0;
+          left: 0;
           top: 0;
           min-width: 100vw; 
           min-height: 100vh;
-          z-index: -10;
-      }`;
-
-      if (parseInt(current_config.opacity) > 0.0) {
-        Opacity = current_config.opacity;
+          z-index: -12;
+          pointer-events: none;
       }
 
-      var transparent_body = document.createElement ("style");
-      transparent_body.innerHTML = `
-        hui-masonry-view {
-    	  opacity: 0.` + Opacity + `;
-        }
+      #background-iframe{
+          pointer-events: none;
+      }
+
+      hui-view-background{
+          background:none;
+      }
       `;
 
-// transparent for top Pannel
-      STATUS_MESSAGE (current_config.transparent_panel);
-      if (current_config.transparent_panel) {
-        var html_element = document.querySelector("html");
-        html_element.style.removeProperty ('--app-header-background-color');
-      
-        var ha_style = `<style>
-    	    html {
-    		--primary-color:initial;
-    	    }`;
-        Header.insertAdjacentHTML('beforeBegin',ha_style);
+      // Only apply opacity if configured - note this creates a CSS stacking
+      // context which may cause overlays (e.g. Bubble Card) to appear behind
+      // the background. Remove opacity: from your config if this affects you.
+      if (Opacity < 99) {
+        style.innerHTML += `
+      hui-masonry-view,
+      hui-sections-view,
+      hui-panel-view {
+          opacity: 0.` + Opacity + `;
+      }`;
       }
 
+// transparent for top Pannel
       var div = document.createElement("div");
       div.id = "background-video";
       div.className = "bg-wrap";
       div.innerHTML = `
-       <iframe id="background-iframe" class="bg-video" frameborder="0" srcdoc="${source_doc}"/> 
+       <iframe id="background-iframe" class="bg-video" frameborder="0" style="pointer-events:none;" srcdoc="${source_doc}"/> 
       
       `;
     
       Root.shadowRoot.appendChild(style);
       Root.shadowRoot.appendChild(div);
-      View.insertBefore(transparent_body,View.firstChild);
+      
+      View.setAttribute ("style","background:none;");
       
       Previous_Url = state_url;
     }
@@ -557,6 +562,29 @@ function renderBackgroundHTML() {
         Previous_Url = state_url;
       }
     }
+
+    }  // <-- this closes the if (state_url != "" && Hui) block
+
+  // transparent for top Panel - evaluated on every render
+  // Fall back to root Animated_Config for top-level settings not present in group/view configs
+  var transparent_panel = current_config.transparent_panel !== undefined ? current_config.transparent_panel : (Animated_Config ? Animated_Config.transparent_panel : false);
+  if (transparent_panel) {
+    if (!Hui.shadowRoot.getElementById('animated-bg-panel-style')) {
+      var ha_style = document.createElement('style');
+      ha_style.id = 'animated-bg-panel-style';
+      ha_style.innerHTML = `
+        .header {
+          background-color: transparent !important;
+        }
+        .toolbar {
+          background-color: transparent !important;
+        }`;
+      Hui.shadowRoot.appendChild(ha_style);
+    }
+  }
+  else {
+    var panelStyle = Hui.shadowRoot.getElementById('animated-bg-panel-style');
+    if (panelStyle) panelStyle.remove();
   }
 }
 
@@ -660,6 +688,19 @@ function setDebugMode() {
   }
 }
 
+function cleanupDOM() {
+  if (Root && Root.shadowRoot) {
+    var oldDiv = Root.shadowRoot.getElementById('background-video');
+    if (oldDiv) oldDiv.remove();
+    var oldStyles = Root.shadowRoot.querySelectorAll('style');
+    oldStyles.forEach(function(s) { s.remove(); });
+  }
+  if (Hui && Hui.shadowRoot) {
+    var panelStyle = Hui.shadowRoot.getElementById('animated-bg-panel-style');
+    if (panelStyle) panelStyle.remove();
+  }
+}
+
 //main function
 function run() {
   getVars();
@@ -738,6 +779,7 @@ function run() {
 }
 
 function restart() {
+  cleanupDOM();
   clearInterval(wait_interval);
   var wait_interval = setInterval(() => {
     getVars()
